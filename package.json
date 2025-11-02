@@ -4,8 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "npx prisma migrate reset --force && jest",
+    "test": "dotenv -e .env.test -- npx prisma migrate reset --force && dotenv -e .env.test -- jest -i ",
     "start": "nodemon --watch ./src --legacy-watch ./src/index.js",
+    "prisma:init": "npx prisma generate && npx prisma migrate dev && npm run prisma:seed",
+    "prisma:migrate:reset": "npx prisma migrate reset --force",
     "prisma:generate": "npx prisma generate",
     "prisma:seed": "npx tsx prisma/seeders/seed.js",
     "prisma:migrate": "npx prisma migrate dev"
