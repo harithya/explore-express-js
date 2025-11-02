@@ -10,14 +10,10 @@ export const AuthService = {
   async login({ email, password }) {
     const user = await db.user.findUnique({ where: { email } });
 
-    if (!user) {
-      throw new ResponseError(404, "Email not found");
-    }
+    if (!user) throw new ResponseError(404, "Email not found");
 
     const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      throw new ResponseError(401, "Invalid password");
-    }
+    if (!validPassword) throw new ResponseError(401, "Invalid password");
 
     const accessToken = jwt.sign(
       { id: user.id, email: user.email },
@@ -33,9 +29,7 @@ export const AuthService = {
 
   async register({ email, password, ...rest }) {
     const existingUser = await db.user.findUnique({ where: { email } });
-    if (existingUser) {
-      throw new ResponseError(409, "Email already exists");
-    }
+    if (existingUser) throw new ResponseError(409, "Email already exists");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
