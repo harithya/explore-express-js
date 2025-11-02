@@ -2,12 +2,18 @@ import request from "supertest";
 import app from "../src/app.js";
 import { userFactory } from "./factory/userFactory.js";
 import { logger } from "../src/lib/logging.js";
+import { db } from "../src/lib/database.js";
 
 const login = async (email, password) => {
     return request(app)
         .post("/auth/login")
         .send({ email, password });
 };
+
+const getUser = async (email) => {
+    const user = await db.user.findUnique({ where: { email } });
+    return user
+}
 
 describe("POST /auth/login", function () {
     it("should succeed with valid email and password", async function () {
@@ -38,6 +44,43 @@ describe("POST /auth/login", function () {
 
     it("should fail if email and password are missing", async function () {
         const result = await login("", "");
+
+        expect(result.statusCode).toBe(400);
+        expect(result.body.message).toBe("Validation Error");
+    });
+});
+
+
+const register = async (data) => {
+    return request(app)
+        .post("/auth/register")
+        .send(data);
+};
+
+
+describe('POST /auth/register', function () {
+    it('should succeed with valid email and password', async function () {
+        const data = await userFactory('make', {
+            password: "xxxxxxxx"
+        });
+        const result = await register(data);
+        const user = await getUser(data.email);
+
+        expect(result.statusCode).toBe(200);
+        expect(result.body.data.email).toBe(data.email);
+        expect(user.email).toBe(data.email);
+    });
+
+    it('should fail if email already exists', async function () {
+        const data = await userFactory('create');
+        const result = await register(data);
+
+        expect(result.statusCode).toBe(409);
+        expect(result.body.message).toBe("Email already exists");
+    });
+
+    it('should fail if email and password are missing', async function () {
+        const result = await register({});
 
         expect(result.statusCode).toBe(400);
         expect(result.body.message).toBe("Validation Error");
