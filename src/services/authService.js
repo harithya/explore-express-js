@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET_KEY || "rahasia";
 const TOKEN_EXPIRES_IN = 60 * 60; // 1 jam
 
-export const AuthService = {
+export const authService = {
   async login({ email, password }) {
     const user = await db.user.findUnique({ where: { email } });
 
