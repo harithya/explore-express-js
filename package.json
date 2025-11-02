@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/index.js",
+    "start": "nodemon --watch ./src --legacy-watch ./src/index.js",
     "prisma:generate": "npx prisma generate",
     "prisma:seed": "npx tsx prisma/seeders/seed.js",
     "prisma:migrate": "npx prisma migrate dev"
@@ -16,9 +16,12 @@
   "dependencies": {
     "@prisma/client": "^6.18.0",
     "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "winston": "^3.18.3"
+    "jsonwebtoken": "^9.0.2",
+    "winston": "^3.18.3",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "prisma": "^6.18.0"
