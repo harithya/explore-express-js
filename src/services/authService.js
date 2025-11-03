@@ -43,4 +43,12 @@ export const authService = {
 
     return user
   },
+
+  async getProfile(id) {
+    const user = await db.user.findUnique({
+      where: { id }
+    });
+
+    return user;
+  }
 };

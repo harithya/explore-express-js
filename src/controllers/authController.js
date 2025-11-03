@@ -22,4 +22,12 @@ const register = async (req, res) => {
   });
 }
 
-export default { login, register };
+const profile = async (req, res) => {
+  const data = await authService.getProfile(req.auth.id);
+  return res.json({
+    message: "Profile Success",
+    data
+  });
+}
+
+export default { login, register, profile };

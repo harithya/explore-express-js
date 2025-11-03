@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../src/app.js";
-import { userFactory } from "./factory/userFactory.js";
+import { jwtFactory, userFactory } from "./factory/userFactory.js";
 import { logger } from "../src/lib/logging.js";
 import { db } from "../src/lib/database.js";
 
@@ -85,4 +85,28 @@ describe('POST /auth/register', function () {
         expect(result.statusCode).toBe(400);
         expect(result.body.message).toBe("Validation Error");
     });
+});
+
+
+const profile = async (token) => {
+    return request(app)
+        .get("/auth/profile")
+        .set('Authorization', `Bearer ${token}`);
+}
+
+describe('GET /auth/profile', function () {
+    it('should succeed with valid token', async function () {
+        const user = await userFactory('create');
+        const result = await profile(await jwtFactory(user.email));
+
+        expect(result.statusCode).toBe(200);
+        expect(result.body.data.email).toBe(user.email);
+    })
+
+    it('should fail if token is invalid', async function () {
+        const result = await profile("invalid");
+
+        expect(result.statusCode).toBe(401);
+        expect(result.body.message).toBe("Unauthorized");
+    })
 });
