@@ -2,7 +2,7 @@ import { ResponseError } from "../error/responseError.js";
 import { db } from "../lib/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { mail } from "../lib/mail.js";
+import { mail, withHtml } from "../lib/mail.js";
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY || "rahasia";
 const TOKEN_EXPIRES_IN = 60 * 60; // 1 jam
@@ -36,7 +36,10 @@ export const authService = {
       from: process.env.MAIL_FROM_USER,
       to: email,
       subject: "Register Success",
-      text: `hello ${email}`
+      html: withHtml('verification', {
+        name: rest.name,
+        verification_url: 'https://example.com/verify?token=some-token',
+      })
     });
 
     const hashedPassword = await bcrypt.hash(password, 10);
