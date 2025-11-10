@@ -17,7 +17,7 @@ const register = async (req, res) => {
 
   const data = await authService.register(body);
   return res.status(200).json({
-    message: "Register Success",
+    message: "Register Success, Please check your email",
     data
   });
 }
