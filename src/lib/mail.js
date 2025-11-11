@@ -21,7 +21,6 @@ const withHtml = (fileName, data = {}) => {
     let source = fs.readFileSync(filePath, 'utf-8');
     Object.keys(data).forEach(key => {
         const regex = `{{${key}}}`;
-        console.log('Replacing', regex, 'with', data[key]);
         source = source.replace(regex, data[key]);
     });
 

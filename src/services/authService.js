@@ -3,6 +3,7 @@ import { db } from "../lib/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { mail, withHtml } from "../lib/mail.js";
+import { logger } from "../lib/logging.js";
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY || "rahasia";
 const TOKEN_EXPIRES_IN = 60 * 60; // 1 jam
@@ -32,26 +33,35 @@ export const authService = {
     const existingUser = await db.user.findUnique({ where: { email } });
     if (existingUser) throw new ResponseError(409, "Email already exists");
 
+    const emailToken = Math.random().toString(36).substring(2, 15);
+
     await mail.sendMail({
       from: process.env.MAIL_FROM_USER,
       to: email,
       subject: "Register Success",
       html: withHtml('verification', {
         name: rest.name,
-        verification_url: 'https://example.com/verify?token=some-token',
+        verification_url: `${process.env.APP_URL}/auth/verify-email?token=${emailToken}`,
       })
     });
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    logger.info('Payload for new user', {
+      email,
+      password: hashedPassword,
+      emailVerifyToken: emailToken,
+      ...rest
+    });
     const user = await db.user.create({
       data: {
         email,
         password: hashedPassword,
+        emailVerifyToken: emailToken,
         ...rest
       }
     });
 
-    return user
+    return user;
   },
 
   async getProfile(id) {

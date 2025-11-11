@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String
-  email         String    @unique
-  password      String
-  emailVerified DateTime? @map("email_verified")
+  id               String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  password         String
+  emailVerified    DateTime? @map("email_verified")
+  emailVerifyToken String?   @map("email_verify_token")
 
   createdAt  DateTime    @default(now()) @map("created_at")
   updatedAt  DateTime    @updatedAt @map("updated_at")
