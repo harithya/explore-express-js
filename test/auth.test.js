@@ -7,9 +7,10 @@ import { db } from "../src/lib/database.js";
 jest.mock("../src/lib/mail.js", () => ({
     mail: {
         sendMail: jest.fn().mockResolvedValue(true),
+        mail: jest.fn().mockResolvedValue('test'),
     },
+    withHtml: jest.fn().mockReturnValue('<html></html>'),
 }));
-
 
 const login = async (email, password) => {
     return request(app)
